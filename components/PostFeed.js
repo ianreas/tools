@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { firestore } from '../lib/firebase';
 import { getDoc, doc} from 'firebase/firestore';
 import moment from 'moment'
+import { useRouter } from 'next/router';
 
 
 export default function PostFeed({posts, admin}) { //admin is just a boolean that will be used to render additional UI on the admin page cause this PostFeed component will also be used for the admin page
@@ -10,6 +11,11 @@ export default function PostFeed({posts, admin}) { //admin is just a boolean tha
 }
 
 function PostItem({post, admin = false}) {
+  const router = useRouter();
+  const isHomePage = router.pathname === '/';
+  const animationClass = isHomePage ? 'animate' : '';
+
+
     // Naive method to calc word count and read time
   const wordCount = post?.content.trim().split(/\s+/g).length;
   const minutesToRead = (wordCount / 100 + 1).toFixed(0);
@@ -43,13 +49,27 @@ function PostItem({post, admin = false}) {
   }
   
   
+let isExchanging
+  if (post.exchangeFor){
+    isExchanging = true
+  }else{
+    isExchanging = false
+  }
+
+  let buying
+  if (post.buyingselling === "selling"){
+    buying = false
+  }else{
+    buying = true
+  }
 
 
 
 
 
   return (
-    <div className="card">
+    <Link legacyBehavior href={`/${post.username}/${post.slug}`}>
+    <div className={`card ${animationClass}`}>
       <div className='theimage'>
       {post.pictureCode ? <img src={post.pictureCode} alt='toolpic' className='feedimage'></img> : <div>No pic</div>}
       
@@ -63,18 +83,29 @@ function PostItem({post, admin = false}) {
       <div className='addressinfo'>
         <p>{post.address?.address ? post.address.address : <></>}</p>
       </div>
+      <div className='priceinfo'>
+        {!isExchanging && <p>Price: ${post.price}</p>}
+        <p>{post.buyingselling}</p>
+      </div>
 
       <div className='dateinfo'>
-        <p>Available on:</p>
-        <p>{convertEpochToDateTime(post.startDate) }</p>
-        <p>Return By:</p>
-        <p>{convertEpochToDateTime(post.endDate)}</p>
-        <p>Exchange For: {post.exchangeFor}</p>
+        {buying && 
+        <p>Post created on {convertEpochToDateTime(post.createdAt)}</p>}
+        {!buying &&
+        <p>Available on:</p>}
+        {!buying &&
+        <p>{convertEpochToDateTime(post.startDate) }</p>}
+        {isExchanging ?
+        <p>Return By:</p>  : <></>}
+        {isExchanging ?
+        <p>{convertEpochToDateTime(post.endDate)}</p> : <></>}
+        {isExchanging ?
+        <p>Exchange For: {post.exchangeFor}</p> : <></>}
       </div>
 
 
       <Link legacyBehavior href={`/${post.username}`}>
-        <a className='bywhom'>
+        <a className='bywhom' >
           <strong>By @{post.username}</strong>
         </a>
       </Link>
@@ -96,5 +127,6 @@ function PostItem({post, admin = false}) {
       )}
       </div>
     </div>
+    </Link>
   );
 }

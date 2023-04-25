@@ -69,15 +69,15 @@ function SignOutButton() {
 
   return (
     <>
-    <div>
-      <h1 className={styles.intro}>Hello. Exchange tools or borrow them.</h1>
+    <div className={styles.introContainer}>
+      <h1 className={styles.intro}>Hello. <span className={styles.magic}>Buy, sell, or exchange your tools.</span></h1>
     </div>
     <div className={styles.signoutGradient}>
     <Link href='/' class={styles.link}>
-      borrow some tools
+      see some tools
     </Link>
     <Link href='admin' class={styles.link}>
-      lend your tools
+      make a post
     </Link>
     </div>
     <button  className='btn-signout' onClick={() => signOut(auth)}>Sign Out</button> {/*sign out button and upon pressing it it triggers the signout method*/}

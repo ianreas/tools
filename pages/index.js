@@ -121,11 +121,14 @@ export default function Home(props) {
       if(post.address?.coordinates){
       post.distance = haversine(coordinates, post.address?.coordinates);
       }
+      
     });
   
     // Finally, sort the posts based on the calculated distances
     return posts.sort((a, b) => a.distance - b.distance);
   }
+
+
   
   function haversine(coord1, coord2) {
      console.log(coord1)
@@ -171,6 +174,37 @@ export default function Home(props) {
     setPosts(props.posts)
   }
 
+  const [buyFilter, setBuyFilter] = useState('')
+
+  console.log(buyFilter) //return null when i choose a filter
+
+  const handleBuyFilterChange = (filter) => {
+    setBuyFilter(filter)
+    console.log(filter + 'filter')
+  }
+
+  /*  */
+
+  useEffect(()=> {
+    if (buyFilter===''){
+      setPosts(props.posts)
+    }
+    else if (buyFilter==='buying'){
+      const filtered = posts.filter(post => post.buyingselling === 'buying')
+      setPosts(filtered)
+    }
+    else if (buyFilter==='selling'){
+      const filtered = posts.filter(post => post.buyingselling === 'selling')
+      setPosts(filtered)
+    }
+    else if (buyFilter==='borrowing'){
+      const filtered = posts.filter(post => post.buyingselling === 'borrowing')
+      setPosts(filtered)
+    }
+
+
+  }, [buyFilter])
+
   
 
 
@@ -179,23 +213,44 @@ export default function Home(props) {
       <Metatags title="Home Page" description="Get the latest posts on our site" />
 
       <div className="card card-info">
-        <h2>Share your tools and don&apos;t forget to include some images</h2>
-        <p>Welcome! I am Ian. Here, you can borrow, or lend common household tools in your area!</p>
-        <p>Sign up for an account, ✍️ write posts, then 💞 heart the tools you want to borrow. </p>
-        <p>Borrowing is free. Lending pays money.</p>
+        <h2><span class='magic'><span class="magic-star">
+      <svg viewBox="0 0 512 512">
+      <path d="M512 255.1c0 11.34-7.406 20.86-18.44 23.64l-171.3 42.78l-42.78 171.1C276.7 504.6 267.2 512 255.9 512s-20.84-7.406-23.62-18.44l-42.66-171.2L18.47 279.6C7.406 276.8 0 267.3 0 255.1c0-11.34 7.406-20.83 18.44-23.61l171.2-42.78l42.78-171.1C235.2 7.406 244.7 0 256 0s20.84 7.406 23.62 18.44l42.78 171.2l171.2 42.78C504.6 235.2 512 244.6 512 255.1z" />
+      </svg>
+    </span>
+    <span class="magic-star">
+      <svg viewBox="0 0 512 512">
+      <path d="M512 255.1c0 11.34-7.406 20.86-18.44 23.64l-171.3 42.78l-42.78 171.1C276.7 504.6 267.2 512 255.9 512s-20.84-7.406-23.62-18.44l-42.66-171.2L18.47 279.6C7.406 276.8 0 267.3 0 255.1c0-11.34 7.406-20.83 18.44-23.61l171.2-42.78l42.78-171.1C235.2 7.406 244.7 0 256 0s20.84 7.406 23.62 18.44l42.78 171.2l171.2 42.78C504.6 235.2 512 244.6 512 255.1z" />
+      </svg>
+    </span>
+    <span class="magic-star">
+      <svg viewBox="0 0 512 512">
+      <path d="M512 255.1c0 11.34-7.406 20.86-18.44 23.64l-171.3 42.78l-42.78 171.1C276.7 504.6 267.2 512 255.9 512s-20.84-7.406-23.62-18.44l-42.66-171.2L18.47 279.6C7.406 276.8 0 267.3 0 255.1c0-11.34 7.406-20.83 18.44-23.61l171.2-42.78l42.78-171.1C235.2 7.406 244.7 0 256 0s20.84 7.406 23.62 18.44l42.78 171.2l171.2 42.78C504.6 235.2 512 244.6 512 255.1z" />
+      </svg>
+    </span>
+    <span class='magic-text'>Sell, buy and exchange your tools.</span></span> </h2>
+        <p>Welcome! I am Ian. Here, you can buy, sell and exchange common household tools in your area!</p>
+        <p>Sign up for an account, ✍️ write posts, then 💞 heart the tools you want to buy. </p>
       </div>
 
-      <div>
-      <button onClick={() => setShowPopup(true)}> Show Popup </button>
-      {showPopup && (
+      <div className='filters'>
+      {/* <button onClick={() => setShowPopup(true)} className='showfilters'> Show Filters</button> */}
+      {//showPopup && (
         <FilterToggle 
-          closePopup={() => setShowPopup(false)} 
+          //closePopup={() => setShowPopup(false)} 
           onButtonClick={chooseYourAddress}
           onChooseLat={chooseCoordinates}
           onButtonNameClick={choosePostsbyName}
+          onFilterChange={handleBuyFilterChange}
+          setSelectedOption={setBuyFilter}
+          selectedOption={buyFilter}
         />
-      )}
-      <button onClick={clearFilters}>Clear Filters</button>
+      //)
+    }
+    <div className='clearfilters'>
+    <button onClick={clearFilters} >Clear Filters</button>
+    </div>
+      
       
     </div>
     
@@ -204,11 +259,11 @@ export default function Home(props) {
       <PostFeed posts={posts} />
       </div>
 
-      {!loading && !postsEnd && <button onClick={getMorePosts}>Load more recipes</button>} 
+      {!loading && !postsEnd && <button className="btn-red" onClick={getMorePosts}>Load more posts</button>} 
 
       <Loader show={loading} />
 
-      {postsEnd && 'You have reached the end!'}
+      {postsEnd && <p style={{color: 'white'}}>'You have reached the end!'</p>}
     </main>
   );
 }

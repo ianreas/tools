@@ -22,13 +22,14 @@ export default function Navbar() {
             <li>     {/* goes to www.url.com/username */}
                         <Link legacyBehavior href={`/${username}`}>       
                             <div>
-                            <img src={'../biggertool.jpg'} />
+                            {/* <img src={'../biggertool.jpg'} /> */}
+                            <h1 className='logo-name'>Toolio</h1>
                             </div>
                         </Link>
                     </li>
                 <li>
                     <Link legacyBehavior href='/'>
-                        <button className='btn-logo'>borrow a tool</button>
+                        <button className='btn-logo'>see tools</button>
                     </Link>
                 </li>
 
@@ -39,7 +40,7 @@ export default function Navbar() {
                     <li>    {/* goes to the admin page where user can share their tool */}
                         <Link legacyBehavior href='/admin'>                        
                             
-                            <button className='btn-blue'>share your tool</button>
+                            <button className='btn-blue'>make a post</button>
                             
                         </Link>
                     </li>

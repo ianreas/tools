@@ -16,12 +16,13 @@ import toast from 'react-hot-toast';
 
 
 
+
 export default function AdminPostsPage(props) {                     //components inside of the authcheck will only render if the auth check renders so we don't have to do any conditions to check which content to render 
   return (  //we wrap components of this page with authcheck so the children of auth check will only be rendered if usernsme is signed in
     <main className='adminindex'>                  
-      <AuthCheck>                   
+      <AuthCheck> 
+        <CreateNewPost />                  
         <PostList />               
-        <CreateNewPost />
       </AuthCheck>
     </main>
   );              
@@ -40,7 +41,7 @@ function PostList() {       //this component renders a list of Posts            
 
   return (
     <>
-      <h1 className='manageposts'>Manage your Posts</h1>
+      {<h1 className='manageposts' style={{color: "#8dffa8"}}>Manage your Posts</h1>}
       <PostFeed posts={posts} admin /> {/* we pass the posts to PostFeed which is in the components folder */}
     </>
   );
@@ -78,7 +79,8 @@ function CreateNewPost() { //this component will allow us to create new posts
       price: 0, 
       startDate: serverTimestamp(),
       endDate: serverTimestamp(),
-      exchangeFor: "nothing"
+      exchangeFor: "nothing",
+      
     };
 
     await setDoc(ref, data);         //comitting data to the firestore
@@ -90,8 +92,10 @@ function CreateNewPost() { //this component will allow us to create new posts
   };
 
   return (
+    <div className={styles.form}>
     <form onSubmit={createPost}>
       <input
+       style={{padding: '5px', width: '100%', borderRadius: '5px', border: '1px solid #ccc'}}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Share Your Tool! What's the title of the post?"
@@ -104,5 +108,6 @@ function CreateNewPost() { //this component will allow us to create new posts
         Add pictures and details
       </button>
     </form>
+    </div>
   );
 }

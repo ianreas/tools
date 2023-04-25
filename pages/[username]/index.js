@@ -5,6 +5,7 @@ import UserProfile from '../../components/UserProfile';
 import Metatags from '../../components/Metatags';
 import PostFeed from '../../components/PostFeed';
 
+
 //we user serverside rendering here (SSR) because this page won't rendered in real time and it will poblic
 export async function getServerSideProps({ query: urlQuery }) { //anytime this page is requested next.js will run this function
     const { username } = urlQuery;

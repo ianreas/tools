@@ -73,8 +73,8 @@ function PostManager() {
           </section>
 
           <aside>
-            <h3 id="tools">Tools</h3>
-            <button onClick={() => setPreview(!preview)}>{preview ? 'Edit' : 'Preview'}</button>
+            <h3 id="tools" style={{color: "white"}}>Tools</h3>
+            <button onClick={() => setPreview(!preview)} className="btn-blue">{preview ? 'Edit' : 'Preview'}</button>
             <Link href={`/${post.username}/${post.slug}`}>
               <button className="btn-blue">Live view</button>
             </Link>
@@ -111,7 +111,7 @@ const PlacesAutocomplete = ({ setSelected, setAddress }) => {
 
   return (
   <Combobox onSelect={handleSelect}>
-    <ComboboxInput value={value} onChange={(e)=> setValue(e.target.value)} disabled={!ready} 
+    <ComboboxInput style={{padding: '5px', borderRadius: '5px'}} value={value} onChange={(e)=> setValue(e.target.value)} disabled={!ready} 
     className = 'combobox-input' placeholder='search an address'/>
     <ComboboxPopover>
       <ComboboxList>
@@ -144,7 +144,7 @@ function Map({onButtonClick, onChooseLat}){
   return <>
   <div className='places-container'><PlacesAutocomplete setSelected={setSelected} setAddress={setAddress}/></div>
   <div>
-    <button onClick={handleClick}>Submit</button>
+    <button onClick={handleClick}>Submit your address</button>
   </div>
   <GoogleMap zoom={10} center={selected} mapContainerClassName='map-container' >{selected && <Marker position={selected}/>}</GoogleMap>
   
@@ -181,11 +181,11 @@ function PostForm({ defaultValues, postRef, preview }) {
 
   const { register, handleSubmit, reset, watch, formState: { errors, isDirty, isValid } } = useForm({ defaultValues, mode: 'onChange' });  //mode onChange means everytime the value of the form changes its going to rerender the form also defaultValues is data from our firestore document 
 
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDatee, setStartDate] = useState(new Date());
 
   const [exchangeFore, setExchangeFor] = useState('')
 
-  const [endDate, setEndDate] = useState(new Date())
+  const [endDatee, setEndDate] = useState(new Date())
 
   const handleChange = (event) => {
     setExchangeFor(event.target.value)
@@ -196,21 +196,53 @@ function PostForm({ defaultValues, postRef, preview }) {
 
   console.log(coordinatess)
 
+  const [buying, setBuying] = useState("buying")
+
+  const handleBuying = (event) => {
+    setBuying(event.target.value)
+  }
+
+  const [displaybuying, setDisplayBuying] = useState(true)
+
+  let buyingselling
+
+  if (buying == "buying"){
+    buyingselling = true
+  } else {
+    buyingselling = false
+  }
+
+  let isExchanging
+  if (buying== 'exchanging'){
+    isExchanging = true
+  }
+  else {
+    isExchanging = false
+  }
+
+  const [pricee, setPrice] = useState(0)
+
+  const handlePrice = (event) => {
+    setPrice(event.target.value)
+  }
+
   
 
-  const updatePost = async ({ content, published, exchangeFor, startDate, endDate,address, coordinates }) => { //this function automatically has access to the values in the form, content and published
+  const updatePost = async ({ content, published, exchangeFor, startDate, endDate,address, coordinates, buyingselling, price}) => { //this function automatically has access to the values in the form, content and published
     await updateDoc(postRef, {                 //updateDoc sends the data to firestore
       content,
       published,
       exchangeFor: exchangeFore, 
-      startDate,
-      endDate,
+      startDate: startDatee,
+      endDate: endDatee,
       updatedAt: serverTimestamp(),
       address: {address: newaddress, coordinates : coordinatess},
       coordinates: coordinatess,
+      buyingselling: buying,
+      price: pricee,
     });
 
-    reset({ content, published, exchangeFor, startDate, endDate, address, coordinates});
+    reset({ content, exchangeFor, }); //reset the form after we submit it
 
     toast.success('Post updated successfully!');
   };
@@ -224,20 +256,38 @@ function PostForm({ defaultValues, postRef, preview }) {
       )}
         {/*if we are not in preview mode - we are gonna show some controls*/}
       <div className={preview ? styles.hidden : styles.controls}>
+      <div className='buysell'>
+              <label for='buysell' style={{color: "white"}}>Are you buying or selling?</label>
+              <select id='buysell' name='buysell' value={buying} onChange={handleBuying} style={{padding: '5px', borderRadius: '5px', border: '1px solid #ccc'}}>
+                <option value='buying'>Buying</option>
+                <option value='selling'>Selling</option>
+                <option value='exchanging'>Exchanging</option>
+              </select>
+            </div>
         <ImageUploader postRef={postRef}/> {/*textarea is where users can write the post */}
         <div className='timeselect'>
               <div className='startdate'>
-            <p>When is your tool ready for pickup?</p><DatePicker selected={startDate} showTimeSelect onChange={(date) => setStartDate(date)} />
+            {buyingselling ? <p>When do you want to pick it up?</p> : <p>When is your tool available for pickup?</p>}<DatePicker selected={startDatee} showTimeSelect onChange={(date) => setStartDate(date)} />
             </div>
-            <div className='enddate'>
-              <p>When do you want it to be returned?</p><DatePicker selected={endDate} showTimeSelect onChange={(date) => setEndDate(date)} />
+            {isExchanging && <div className='enddate'>
+              <p>When do you want it to be returned? (If you are exchanging it.) </p><DatePicker selected={endDatee} showTimeSelect onChange={(date) => setEndDate(date)} />
+            </div>}
             </div>
-            </div>
-
+            {isExchanging &&
             <div className='exchangefor'>
             <label for='exchangeitem'>What do you want it to exchange for? If nothing, then just type nothing:        </label>
-              <input type='text' id='exchangeitem' name='exchangeitem' onChange={handleChange} value={exchangeFore} ></input>
+              <input  style={{padding: '5px', width: '100%', borderRadius: '5px', border: '1px solid #ccc'}} type='text' id='exchangeitem' name='exchangeitem' onChange={handleChange} value={exchangeFore} ></input>
             </div>
+              }
+              {!isExchanging && 
+            <div className='price' style={{color: "white", marginTop: "5px"}}>
+              
+            {buyingselling ? <label for='price'>How much money do you want to buy it for?($)</label> : <label for='price'>How much money do you want to sell it for?($)</label>}
+            <input style={{padding: '5px', borderRadius: '5px', border: '1px solid #ccc'}} type='number' id='price' name='price' onChange={handlePrice} ></input>
+            
+            </div>
+                }
+            
             <div className='locsearch'>
             
             {!isLoaded ? <div>Loading</div> : <Map onButtonClick={chooseNewAddress} onChooseLat={chooseCoordinates}/>}
@@ -250,8 +300,8 @@ function PostForm({ defaultValues, postRef, preview }) {
           name="content"
           {...register("content", {
             maxLength: { value: 20000, message: 'content is too long' },
-            minLength: { value: 10, message: 'content is too short' },
-            required: { value: true, message: 'content is required' },
+            
+            required: { value: false, message: 'content is required' },
           })}
         ></textarea>
 

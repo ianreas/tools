@@ -62,7 +62,7 @@
 .signinPage{
   margin: 0;
   padding: 0;
-  background-color: rgb(10, 10, 10);
+  background-color: #41B3A3;
   margin-top: 70px;
   height: 100vh;
   overflow: hidden;
@@ -91,6 +91,41 @@
   place-self: center;
 }
 
+
+.introContainer{
+  display: grid;
+  
+  
+}
+
+.introContainer > h1{
+  padding: clamp(0.25em, 1vw, 1em) clamp(1em, 4vw, 4em);
+  color: white;
+  font-size: clamp(2em, 4vw, 7em);
+}
+
+.magic{
+  animation: background-pan 3s linear infinite;
+  background: linear-gradient(
+    to right,
+    purple, 
+    violet,
+    pink,
+    purple
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+@keyframes background-pan{
+  from{
+    background-position: 0% center;
+  }
+  to{
+    background-position: -200% center;
+  }
+}
  
 
 
